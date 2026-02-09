@@ -3,18 +3,19 @@
 import { useState } from 'react';
 import MapDynamic from '@/components/map/MapDynamic';
 import FacilityList from './FacilityList';
-import ViewToggle from './ViewToggle';
+import SummaryDashboard from './SummaryDashboard';
+import ViewToggle, { ViewMode } from './ViewToggle';
 
 export default function MainContent() {
-  const [view, setView] = useState<'map' | 'list'>('map');
+  const [view, setView] = useState<ViewMode>('map');
 
   return (
-    <main className="flex-1 relative flex flex-col">
-      <div className="absolute top-3 right-3 z-10">
-        <ViewToggle view={view} onChangeView={setView} />
-      </div>
-      <div className="flex-1">
-        {view === 'map' ? <MapDynamic /> : <FacilityList />}
+    <main className="flex-1 flex flex-col min-w-0">
+      <ViewToggle view={view} onChangeView={setView} />
+      <div className="flex-1 relative min-h-0 overflow-hidden">
+        {view === 'map' && <MapDynamic />}
+        {view === 'list' && <FacilityList />}
+        {view === 'table' && <SummaryDashboard />}
       </div>
     </main>
   );

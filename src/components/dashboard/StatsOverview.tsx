@@ -19,12 +19,12 @@ export default function StatsOverview() {
   ];
 
   return (
-    <div className="grid grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
       {stats.map((stat) => (
-        <div key={stat.label} className="bg-white rounded-lg shadow-sm border border-slate-200 p-4">
-          <div className="flex items-center gap-3">
-            <div className={`w-10 h-10 ${stat.color} rounded-lg flex items-center justify-center`}>
-              <span className="text-white text-lg font-bold">
+        <div key={stat.label} className="bg-white rounded-lg shadow-sm border border-slate-200 p-2 md:p-4">
+          <div className="flex items-center gap-2 md:gap-3">
+            <div className={`w-8 h-8 md:w-10 md:h-10 ${stat.color} rounded-lg flex items-center justify-center shrink-0`}>
+              <span className="text-white text-sm md:text-lg font-bold">
                 {stat.label === '医療施設数' && '🏥'}
                 {stat.label === '全体病床稼働率' && '📊'}
                 {stat.label === '空き病床数' && '🛏'}
@@ -32,8 +32,8 @@ export default function StatsOverview() {
               </span>
             </div>
             <div>
-              <p className="text-2xl font-bold text-slate-800">
-                {stat.value}<span className="text-sm font-normal text-slate-500 ml-1">{stat.unit}</span>
+              <p className="text-lg md:text-2xl font-bold text-slate-800">
+                {stat.value}<span className="text-[10px] md:text-sm font-normal text-slate-500 ml-1">{stat.unit}</span>
               </p>
               <p className="text-xs text-slate-500">{stat.label}</p>
             </div>

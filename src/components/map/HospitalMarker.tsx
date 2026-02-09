@@ -1,38 +1,62 @@
 'use client';
 
-import { Marker, Popup } from 'react-leaflet';
+import { Marker, Tooltip } from 'react-leaflet';
 import L from 'leaflet';
 import { Facility } from '@/types';
-import { getAvailabilityStatus, getOccupancyRate } from '@/lib/utils';
+import { getFacilityAvailabilityStatus, getOccupancyRate } from '@/lib/utils';
 import { FACILITY_TYPE_LABELS, AVAILABILITY_COLORS } from '@/lib/constants';
 import { useDashboard } from '@/context/DashboardContext';
 
 function createMarkerIcon(facility: Facility) {
-  const status = facility.beds.length > 0 ? getAvailabilityStatus(facility.beds) : 'available';
-  const bgColor = facility.beds.length > 0 ? AVAILABILITY_COLORS[status] : '#94a3b8';
+  const status = getFacilityAvailabilityStatus(facility);
+  const hasCapacityInfo = facility.beds.length > 0 || !!facility.serviceCapacity;
+  const bgColor = hasCapacityInfo ? AVAILABILITY_COLORS[status] : '#94a3b8';
   const typeInfo = FACILITY_TYPE_LABELS[facility.type];
-  const size = facility.type === 'clinic' || facility.type === 'visiting_nurse' ? 28 : 36;
+  const isLargeMarker = facility.type === 'acute' || facility.type === 'recovery';
+  const size = isLargeMarker ? 36 : 28;
+
+  const pulseClass = hasCapacityInfo && status === 'available' ? 'marker-pulse-green' : '';
+  const outerSize = size + 12;
 
   return L.divIcon({
     className: '',
-    iconSize: [size, size],
-    iconAnchor: [size / 2, size / 2],
+    iconSize: [outerSize, outerSize],
+    iconAnchor: [outerSize / 2, outerSize / 2],
     html: `
       <div style="
-        width: ${size}px;
-        height: ${size}px;
-        border-radius: 50%;
-        background-color: ${bgColor};
-        border: 3px solid white;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        position: relative;
+        width: ${outerSize}px;
+        height: ${outerSize}px;
         display: flex;
         align-items: center;
         justify-content: center;
-        color: white;
-        font-size: ${size <= 28 ? 10 : 13}px;
-        font-weight: bold;
-        cursor: pointer;
-      ">${typeInfo.icon}</div>
+      ">
+        ${pulseClass ? `<div class="${pulseClass}" style="
+          position: absolute;
+          width: ${size}px;
+          height: ${size}px;
+          border-radius: 50%;
+          background-color: ${bgColor};
+          opacity: 0.4;
+        "></div>` : ''}
+        <div style="
+          position: relative;
+          width: ${size}px;
+          height: ${size}px;
+          border-radius: 50%;
+          background-color: ${bgColor};
+          border: 3px solid white;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: white;
+          font-size: ${size <= 28 ? 10 : 13}px;
+          font-weight: bold;
+          cursor: pointer;
+          transition: transform 0.2s ease;
+        ">${typeInfo.icon}</div>
+      </div>
     `,
   });
 }
@@ -42,6 +66,7 @@ export default function HospitalMarker({ facility }: { facility: Facility }) {
   const icon = createMarkerIcon(facility);
   const occupancy = facility.beds.length > 0 ? getOccupancyRate(facility.beds) : null;
   const totalAvailable = facility.beds.reduce((s, b) => s + b.available, 0);
+  const vnCap = facility.serviceCapacity;
 
   return (
     <Marker
@@ -51,8 +76,8 @@ export default function HospitalMarker({ facility }: { facility: Facility }) {
         click: () => setSelectedFacilityId(facility.id),
       }}
     >
-      <Popup>
-        <div className="min-w-[180px]">
+      <Tooltip direction="top" offset={[0, -20]} opacity={0.95}>
+        <div className="min-w-[160px]">
           <p className="font-bold text-sm">{facility.name}</p>
           <p className="text-xs text-slate-500">{FACILITY_TYPE_LABELS[facility.type].label}</p>
           {occupancy !== null && (
@@ -61,9 +86,15 @@ export default function HospitalMarker({ facility }: { facility: Facility }) {
               <p className="text-xs">空き病床: <span className="font-semibold">{totalAvailable}床</span></p>
             </div>
           )}
-          <p className="text-xs text-teal-600 mt-1 cursor-pointer">クリックで詳細を表示</p>
+          {vnCap && (
+            <div className="mt-1">
+              <p className="text-xs">受入可能: <span className="font-semibold">{vnCap.availableSlots}名</span></p>
+              <p className="text-xs">対応中: <span className="font-semibold">{vnCap.currentPatients}/{vnCap.maxPatients}名</span></p>
+            </div>
+          )}
+          <p className="text-xs text-teal-600 mt-1">クリックで詳細を表示</p>
         </div>
-      </Popup>
+      </Tooltip>
     </Marker>
   );
 }

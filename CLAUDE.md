@@ -31,13 +31,15 @@ src/
 │   ├── map/
 │   │   ├── MapContainer.tsx    # Leaflet地図本体 ("use client")
 │   │   ├── MapDynamic.tsx      # SSR回避のdynamic importラッパー
-│   │   └── HospitalMarker.tsx  # 色付きマーカー (L.divIcon)
+│   │   ├── HospitalMarker.tsx  # 色付きマーカー (L.divIcon) + パルスアニメーション
+│   │   └── MapLegend.tsx       # 凡例（施設種別 + 空き状況）
 │   ├── dashboard/
 │   │   ├── StatsOverview.tsx   # KPIカード4つ
 │   │   ├── OccupancyBar.tsx    # 稼働率バー（共通部品）
+│   │   ├── BedSummaryTable.tsx # 病床集計テーブル（重症度レベル別）
 │   │   ├── FacilityList.tsx    # 施設リスト表示
-│   │   ├── ViewToggle.tsx      # 地図/リスト切替タブ
-│   │   └── MainContent.tsx     # メインエリア（地図/リスト切替管理）
+│   │   ├── ViewToggle.tsx      # 地図/リスト/集計 切替タブ
+│   │   └── MainContent.tsx     # メインエリア（3ビュー切替管理）
 │   ├── detail/
 │   │   └── FacilityDetailPanel.tsx  # 右スライドイン詳細パネル
 │   └── filters/
@@ -71,14 +73,12 @@ src/
   - 「この施設にコンタクト」「紹介状を作成」ボタン（モック）
 - [x] KPIカード（施設数, 稼働率, 空き病床数, 退院予定）
 - [x] フィルタ（施設種別, 重症度レベル, 診療科）
-- [x] 地図/リスト切替表示
+- [x] 地図/リスト/集計の3タブ切替表示
 - [x] レスポンシブ対応のフルスクリーンレイアウト
-
-### 未実装（モックアップの改善余地）
-- [ ] 病床集計テーブル（BedSummaryTable）— 全施設横断の集計表示
-- [ ] モバイル対応の改善（現在はデスクトップ優先）
-- [ ] 凡例（マーカー色・アイコンの説明）
-- [ ] 地図上のマーカーアニメーション
+- [x] 病床集計テーブル（BedSummaryTable）— 全施設横断の重症度レベル別集計
+- [x] 凡例（施設種別アイコン + 病床空き状況の色分け説明、折りたたみ可）
+- [x] 地図上のマーカーアニメーション（満床: 赤パルス、残りわずか: 黄パルス）
+- [x] モバイル対応（ドロワーフィルタ、2列KPI、全幅詳細パネル）
 
 ## 今後の開発ロードマップ（keikaku.md Phase 2以降）
 

@@ -4,19 +4,28 @@ import { useDashboard } from '@/context/DashboardContext';
 import { FACILITY_TYPE_LABELS, SEVERITY_LABELS } from '@/lib/constants';
 import { getOccupancyRate } from '@/lib/utils';
 import OccupancyBar from '@/components/dashboard/OccupancyBar';
+import OutpatientCalendar from '@/components/detail/OutpatientCalendar';
 
 export default function FacilityDetailPanel() {
   const { facilities, selectedFacilityId, setSelectedFacilityId } = useDashboard();
   const facility = facilities.find((f) => f.id === selectedFacilityId);
 
   return (
-    <div
-      className={`fixed top-0 right-0 h-full w-[420px] bg-white shadow-2xl z-50 transform transition-transform duration-300 ${
-        facility ? 'translate-x-0' : 'translate-x-full'
-      } overflow-y-auto`}
-    >
+    <>
+      {/* Backdrop overlay */}
       {facility && (
-        <div className="p-6">
+        <div
+          className="fixed inset-0 bg-black/20 z-40 transition-opacity"
+          onClick={() => setSelectedFacilityId(null)}
+        />
+      )}
+      <div
+        className={`fixed top-0 right-0 h-full w-full md:w-[420px] bg-white shadow-2xl z-50 transform transition-transform duration-300 ${
+          facility ? 'translate-x-0' : 'translate-x-full'
+        } overflow-y-auto`}
+      >
+        {facility && (
+          <div className="p-6">
           {/* Header */}
           <div className="flex items-start justify-between mb-4">
             <div>
@@ -95,21 +104,31 @@ export default function FacilityDetailPanel() {
             </div>
           )}
 
-          {/* Departments */}
-          {facility.departments.length > 0 && (
+          {/* Visiting Nurse Capacity */}
+          {facility.serviceCapacity && (
             <div className="mb-4">
-              <h3 className="text-sm font-bold text-slate-800 mb-2">診療科・外来</h3>
-              <div className="grid grid-cols-2 gap-2">
-                {facility.departments.map((dept) => (
-                  <div key={dept.id} className="bg-slate-50 rounded p-2">
-                    <p className="text-xs font-medium text-slate-700">{dept.name}</p>
-                    {dept.hasOutpatient && dept.outpatientSlots !== undefined && (
-                      <p className="text-xs text-teal-600">空きコマ: {dept.outpatientSlots}</p>
-                    )}
-                  </div>
-                ))}
+              <h3 className="text-sm font-bold text-slate-800 mb-3">受け入れ状況</h3>
+              <div className="bg-slate-50 rounded-lg p-3">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-xs font-semibold text-slate-600">利用状況</span>
+                  <span className="text-xs text-slate-500">
+                    {((facility.serviceCapacity.currentPatients / facility.serviceCapacity.maxPatients) * 100).toFixed(0)}%
+                  </span>
+                </div>
+                <OccupancyBar rate={(facility.serviceCapacity.currentPatients / facility.serviceCapacity.maxPatients) * 100} />
+                <div className="grid grid-cols-2 gap-2 mt-3 text-xs text-slate-500">
+                  <span>スタッフ数: <span className="font-medium text-slate-700">{facility.serviceCapacity.totalStaff}名</span></span>
+                  <span>最大受入: <span className="font-medium text-slate-700">{facility.serviceCapacity.maxPatients}名</span></span>
+                  <span>対応中: <span className="font-medium text-slate-700">{facility.serviceCapacity.currentPatients}名</span></span>
+                  <span>受入可能: <span className="font-medium text-green-600">{facility.serviceCapacity.availableSlots}名</span></span>
+                </div>
               </div>
             </div>
+          )}
+
+          {/* Departments & Outpatient Calendar */}
+          {facility.departments.length > 0 && (
+            <OutpatientCalendar departments={facility.departments} />
           )}
 
           {/* Last Updated */}
@@ -129,5 +148,6 @@ export default function FacilityDetailPanel() {
         </div>
       )}
     </div>
+    </>
   );
 }

@@ -1,4 +1,4 @@
-export type FacilityType = 'acute' | 'recovery' | 'clinic' | 'visiting_nurse';
+export type FacilityType = 'acute' | 'recovery' | 'clinic' | 'visiting_nurse' | 'home_care' | 'day_service';
 
 export type AvailabilityStatus = 'available' | 'few' | 'full';
 
@@ -17,6 +17,14 @@ export interface Department {
   name: string;
   hasOutpatient: boolean;
   outpatientSlots?: number;
+  weeklySchedules?: WeeklyOutpatientSchedule[];
+}
+
+export interface ServiceCapacity {
+  totalStaff: number;
+  currentPatients: number;
+  maxPatients: number;
+  availableSlots: number;
 }
 
 export interface Facility {
@@ -33,6 +41,27 @@ export interface Facility {
   emergencyAccepting: boolean;
   notes?: string;
   lastUpdated: string;
+  serviceCapacity?: ServiceCapacity;
+}
+
+export type TimeSlot = 'am' | 'pm1' | 'pm2';
+export type OutpatientSlotStatus = 'available' | 'few' | 'full' | 'closed';
+export type DayOfWeek = 0 | 1 | 2 | 3 | 4 | 5; // 月〜土
+
+export interface OutpatientSlotCell {
+  totalSlots: number;
+  bookedSlots: number;
+}
+
+export interface DailyOutpatientSchedule {
+  date: string; // ISO "2026-02-09"
+  slots: Record<TimeSlot, OutpatientSlotCell | null>; // null = 休診
+}
+
+export interface WeeklyOutpatientSchedule {
+  departmentId: string;
+  weekStartDate: string; // 月曜日のISO日付
+  days: DailyOutpatientSchedule[]; // 6要素（月〜土）
 }
 
 export interface FilterState {

@@ -11,6 +11,11 @@ body {
   color: var(--foreground);
 }
 
+/* Hide Leaflet attribution & controls */
+.leaflet-control-attribution {
+  display: none !important;
+}
+
 /* Leaflet popup overrides */
 .leaflet-popup-content-wrapper {
   border-radius: 8px;
@@ -19,4 +24,24 @@ body {
 
 .leaflet-popup-content {
   margin: 8px 12px;
+}
+
+/* Marker pulse animation for available facilities */
+@keyframes pulse-green {
+  0% {
+    transform: scale(1);
+    opacity: 0.35;
+  }
+  50% {
+    transform: scale(1.7);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.35;
+  }
+}
+
+.marker-pulse-green {
+  animation: pulse-green 2.5s ease-in-out infinite;
 }

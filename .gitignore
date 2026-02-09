@@ -36,6 +36,9 @@ yarn-error.log*
 # claude
 CLAUDE.md
 
+# project docs (internal)
+keikaku.md
+
 # vercel
 .vercel
 

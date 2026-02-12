@@ -137,12 +137,9 @@ export default function FacilityDetailPanel() {
           </p>
 
           {/* Action Buttons (mockup) */}
-          <div className="mt-4 space-y-2">
+          <div className="mt-4">
             <button className="w-full bg-teal-600 text-white rounded-lg py-2.5 text-sm font-medium hover:bg-teal-700 transition-colors">
               この施設にコンタクト
-            </button>
-            <button className="w-full bg-white text-teal-600 border border-teal-600 rounded-lg py-2.5 text-sm font-medium hover:bg-teal-50 transition-colors">
-              紹介状を作成
             </button>
           </div>
         </div>
